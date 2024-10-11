@@ -2,6 +2,7 @@ import { Router } from 'express';
 import AppController from '../controllers/AppController';
 import UsersController from '../controllers/UsersController';
 import AuthController from '../controllers/AuthController';
+import FilesController from '../controllers/FilesController';
 
 const router = Router();
 
@@ -27,6 +28,10 @@ router.get('/users/me', (request, response) => {
 
 router.post('/users', (request, response) => {
   UsersController.postNew(request, response);
+});
+
+router.post('/files', (request, response) => {
+  FilesController.postUpload(request, response);
 });
 
 export default router;
