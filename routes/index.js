@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import AppController from '../controllers/AppController';
-import UsersController from '../controllers/UsersController'
+import UsersController from '../controllers/UsersController';
+import AuthController from '../controllers/AuthController';
 
 const router = Router();
 
@@ -12,8 +13,20 @@ router.get('/stats', (request, response) => {
   AppController.getStats(request, response);
 });
 
+router.get('/connect', (request, response) => {
+  AuthController.getConnect(request, response);
+});
+
+router.get('/disconnect', (request, response) => {
+  AuthController.getDisconnect(request, response);
+});
+
+router.get('/users/me', (request, response) => {
+  UsersController.getMe(request, response);
+});
+
 router.post('/users', (request, response) => {
-    UsersController.postNew(request, response);
-})
+  UsersController.postNew(request, response);
+});
 
 export default router;
