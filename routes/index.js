@@ -26,6 +26,14 @@ router.get('/users/me', (request, response) => {
   UsersController.getMe(request, response);
 });
 
+router.get('/files/:id', (request, response) => {
+  FilesController.getShow(request, response);
+});
+
+router.get('/files', (request, response) => {
+  FilesController.getIndex(request, response);
+});
+
 router.post('/users', (request, response) => {
   UsersController.postNew(request, response);
 });
