@@ -6,6 +6,8 @@ import FilesController from '../controllers/FilesController';
 
 const router = Router();
 
+// get
+
 router.get('/status', (request, response) => {
   AppController.getStatus(request, response);
 });
@@ -34,12 +36,24 @@ router.get('/files', (request, response) => {
   FilesController.getIndex(request, response);
 });
 
+// post
+
 router.post('/users', (request, response) => {
   UsersController.postNew(request, response);
 });
 
 router.post('/files', (request, response) => {
   FilesController.postUpload(request, response);
+});
+
+// put
+
+router.put('/files/:id/publish', (request, response) => {
+  FilesController.putPublish(request, response);
+});
+
+router.put('/files/:id/unpublish', (request, response) => {
+  FilesController.putUnpublish(request, response);
 });
 
 export default router;
