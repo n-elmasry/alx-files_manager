@@ -123,12 +123,18 @@ export default class FilesController {
       ])
       .toArray();
 
-    const formattedFiles = files.map((file) => {
-      const { _id, ...rest } = file;
-      return { id: _id, ...rest };
-    });
+      const formattedFiles = files.map((file) => {
+        return {
+          id: file._id.toString(),
+          userId: file.userId.toString(),
+          name: file.name,
+          type: file.type,
+          isPublic: file.isPublic,
+          parentId: file.parentId ? file.parentId.toString() : null,
+        };
+      });
 
-    return response.json(formattedFiles);
+      return response.json(formattedFiles);
   }
 
   static async putPublish(request, response) {
