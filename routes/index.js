@@ -36,6 +36,10 @@ router.get('/files', (request, response) => {
   FilesController.getIndex(request, response);
 });
 
+router.get('/files/:id/data', (request, response) => {
+  FilesController.getFile(request, response);
+});
+
 // post
 
 router.post('/users', (request, response) => {
