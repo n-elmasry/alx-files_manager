@@ -3,8 +3,11 @@ import fs, { promises as fsPromises } from 'fs';
 import path from 'path';
 import mime from 'mime-types';
 import { ObjectId } from 'mongodb';
+import Queue from 'bull';
 import { dbClient } from '../utils/db';
 import { redisClient } from '../utils/redis';
+
+const fileQueue = new Queue('fileQueue');
 
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
@@ -61,6 +64,23 @@ export default class FilesController {
       // Write Base64 data to disk
       const decodedData = Buffer.from(data, 'base64');
       fs.writeFileSync(filePath, decodedData); // Save file to disk
+
+      if (type === 'image') {
+        const insertFile = await dbClient.client.db().collection('files').insertOne({
+          userId: ObjectId(userId),
+          name,
+          type,
+          parentId,
+          isPublic,
+          localPath: filePath, // Store the local path of the file in DB
+        });
+
+        // ** ADDITION: Add a job to the file processing queue **
+        await fileQueue.add({
+          userId,
+          fileId: insertFile.insertedId.toString(),
+        });
+      }
     }
 
     const newFile = {
@@ -101,7 +121,7 @@ export default class FilesController {
       parentId: document.parentId.toString(),
     };
 
-    return response.status(200).json(responseFile);
+    return response.json(responseFile);
   }
 
   static async getIndex(request, response) {
@@ -212,7 +232,17 @@ export default class FilesController {
       return response.status(400).json({ error: "A folder doesn't have content" });
     }
 
-    const localPath = path.join(document.localPath);
+    const { size } = request.query;
+    let localPath = path.join(document.localPath);
+
+    if (size) {
+      const validSizes = ['500', '250', '100'];
+      if (!validSizes.includes(size)) {
+        return response.status(400).json({ error: 'Invalid size' });
+      }
+      localPath += `_${size}`; // Append the size to the local path
+    }
+
     if (!fs.existsSync(localPath)) {
       return response.status(404).json({ error: 'Not found' });
     }
