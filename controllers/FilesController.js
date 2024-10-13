@@ -101,7 +101,7 @@ export default class FilesController {
       parentId: document.parentId.toString(),
     };
 
-    return response.json(responseFile);
+    return response.status(200).json(responseFile);
   }
 
   static async getIndex(request, response) {
